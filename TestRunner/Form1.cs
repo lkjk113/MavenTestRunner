@@ -21,6 +21,11 @@ namespace TestRunner
             get { return projectPath + @"\src\test\java\resources"; }
         }
 
+        string resultPath
+        {
+            get { return projectPath + @"\target\cucumber\report.js"; }
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -208,18 +213,33 @@ namespace TestRunner
 
                     pcs.WaitForExit();
 
+                    //检查结果
+                    string jg = "";
+                    if (!File.Exists(resultPath))
+                        jg = "Failed";
+                    else
+                    {
+                        string resultText = File.ReadAllText(resultPath);
+                        if (resultText.Contains(@"""status"": ""skipped""") || resultText.Contains(@"""status"": ""failed"""))
+                            jg = "Failed";
+                        else if(resultText.Contains(@"""status"": ""passed"""))
+                            jg = "Passed";
+                        else
+                            jg = "Failed";
+                    }
+
+                    //显示结果
                     txtResults.SelectionFont = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
-                    txtResults.SelectionColor = Color.RoyalBlue;
-                    txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + "Done.");
-                    txtResults.SelectionColor = Color.Orange;
-                    txtResults.AppendText("Cost time : " + (DateTime.Now - so).TotalSeconds.ToString("F2") + " sec");
+                    txtResults.SelectionColor = jg == "Passed" ? Color.Green : Color.Red;
+                    txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + jg);
+                    txtResults.AppendText(". Cost time : " + (DateTime.Now - so).TotalSeconds.ToString("F2") + " sec");
                     txtResults.AppendText(Environment.NewLine);
                 }
             }
             catch (Exception ex)
             {
                 txtResults.SelectionFont = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
-                txtResults.SelectionColor = Color.Red;
+                txtResults.SelectionColor = Color.Orange;
                 txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + " " + ex.Message);
                 txtResults.AppendText(Environment.NewLine);
             }
@@ -229,7 +249,6 @@ namespace TestRunner
                 txtResults.SelectionFont = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
                 txtResults.SelectionColor = Color.Black;
                 txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + "Running finish.");
-                txtResults.SelectionColor = Color.Orange;
                 txtResults.AppendText("Cost time : " + (DateTime.Now - st).TotalMinutes.ToString("F2") + " min");
                 txtResults.AppendText(Environment.NewLine);
                 btnRun.Enabled = true;
