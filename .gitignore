@@ -3,3 +3,5 @@
 ################################################################################
 
 /TestRunner/bin/Debug/mavenRun.bat
+/TestRunner/bin/Debug
+/TestRunner/obj/Debug
