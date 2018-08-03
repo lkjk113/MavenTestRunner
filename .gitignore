@@ -5,3 +5,12 @@
 /TestRunner/bin/Debug/mavenRun.bat
 /TestRunner/bin/Debug
 /TestRunner/obj/Debug
+.vs
+obj
+bin
+/.vs/TestRunner/DesignTimeBuild/.dtbcache
+/.vs/TestRunner/v15/.suo
+/.vs/TestRunner/v15/Server/sqlite3/db.lock
+/.vs/TestRunner/v15/Server/sqlite3/storage.ide
+/.vs/TestRunner/v15/Server/sqlite3/storage.ide-shm
+/.vs/TestRunner/v15/Server/sqlite3/storage.ide-wal

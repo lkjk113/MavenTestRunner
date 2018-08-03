@@ -15,50 +15,54 @@ namespace TestRunner
 {
     public partial class Form1 : Form
     {
+        string projectPath = "";
+        string featurePath
+        {
+            get { return projectPath + @"\src\test\java\resources"; }
+        }
 
         public Form1()
         {
             InitializeComponent();
 
-            folderBrowserDialog1.SelectedPath = txtFeaturesPath.Text;
-            folderBrowserDialog2.SelectedPath = txtProjectPath.Text;
-            BindTree();
-
             //不检查线程
             CheckForIllegalCrossThreadCalls = false;
         }
 
-        private void btnFeaturesFolder_Click(object sender, EventArgs e)
+        private void btnProjectPath_Click(object sender, EventArgs e)
         {
             var result = folderBrowserDialog1.ShowDialog();
             if (result.ToString() == "OK")
             {
-                txtFeaturesPath.Text = folderBrowserDialog1.SelectedPath;
+                txtProjectPath.Text = folderBrowserDialog1.SelectedPath;
+                projectPath = folderBrowserDialog1.SelectedPath;
             }
         }
 
-        private void txtFolderPath_TextChanged(object sender, EventArgs e)
+
+        private void txtProjectPath_TextChanged(object sender, EventArgs e)
         {
+            projectPath = txtProjectPath.Text;
             BindTree();
         }
 
+
         private void BindTree()
         {
-            string dir = folderBrowserDialog1.SelectedPath;
-            if (string.IsNullOrWhiteSpace(dir))
+            if (string.IsNullOrWhiteSpace(featurePath))
                 return;
 
             treeView1.Nodes.Clear();
-            var node = treeView1.Nodes.Add(dir);
-            AddFolder(dir, node);
+            var node = treeView1.Nodes.Add(featurePath);
+            AddFolder(featurePath, node);
 
             if (treeView1.Nodes.Count > 0)
                 treeView1.Nodes[0].Expand();
         }
 
-        private void AddFolder(string folderPath, TreeNode parentNode)
+        private void AddFolder(string featurePath, TreeNode parentNode)
         {
-            DirectoryInfo di = new DirectoryInfo(folderPath);
+            DirectoryInfo di = new DirectoryInfo(featurePath);
             var fis = di.GetFiles();
             foreach (var fi in fis)
             {
@@ -207,7 +211,8 @@ namespace TestRunner
                     txtResults.SelectionFont = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
                     txtResults.SelectionColor = Color.RoyalBlue;
                     txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + "Done.");
-                    txtResults.AppendText("Cost time : " + (DateTime.Now - so).TotalSeconds + " sec");
+                    txtResults.SelectionColor = Color.Orange;
+                    txtResults.AppendText("Cost time : " + (DateTime.Now - so).TotalSeconds.ToString("F2") + " sec");
                     txtResults.AppendText(Environment.NewLine);
                 }
             }
@@ -224,24 +229,19 @@ namespace TestRunner
                 txtResults.SelectionFont = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
                 txtResults.SelectionColor = Color.Black;
                 txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + "Running finish.");
-                txtResults.AppendText("Cost time : " + (DateTime.Now - st).TotalMinutes + " min");
+                txtResults.SelectionColor = Color.Orange;
+                txtResults.AppendText("Cost time : " + (DateTime.Now - st).TotalMinutes.ToString("F2") + " min");
                 txtResults.AppendText(Environment.NewLine);
                 btnRun.Enabled = true;
             }
         }
 
-        private void btnProjectPath_Click(object sender, EventArgs e)
-        {
-            var result = folderBrowserDialog2.ShowDialog();
-            if (result.ToString() == "OK")
-            {
-                txtProjectPath.Text = folderBrowserDialog2.SelectedPath;
-            }
-        }
+
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Test Runner, batch testing tool, made by John Yue, 2018.");
         }
+
     }
 }
