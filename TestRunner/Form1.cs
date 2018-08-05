@@ -215,6 +215,7 @@ namespace TestRunner
 
                     //检查结果
                     string jg = "";
+                    long tm = 0;
                     if (!File.Exists(resultPath))
                         jg = "Failed";
                     else
@@ -222,8 +223,16 @@ namespace TestRunner
                         string resultText = File.ReadAllText(resultPath);
                         if (resultText.Contains(@"""status"": ""skipped""") || resultText.Contains(@"""status"": ""failed"""))
                             jg = "Failed";
-                        else if(resultText.Contains(@"""status"": ""passed"""))
+                        else if (resultText.Contains(@"""status"": ""passed"""))
+                        {
                             jg = "Passed";
+                            var mts = Regex.Matches(resultText, @"""duration"":([^,]*),");
+                            foreach (var mt in mts)
+                            {
+                                string match = mt.ToString();
+                                tm += Convert.ToInt64(match.Replace(@"""duration"":", "").Replace(",", ""));
+                            }
+                        }
                         else
                             jg = "Failed";
                     }
@@ -232,7 +241,8 @@ namespace TestRunner
                     txtResults.SelectionFont = new Font("Microsoft Sans Serif", 9, FontStyle.Bold);
                     txtResults.SelectionColor = jg == "Passed" ? Color.Green : Color.Red;
                     txtResults.AppendText(DateTime.Now.ToString("yyyy/MM/dd hh:mm:ss ") + jg);
-                    txtResults.AppendText(". Cost time : " + (DateTime.Now - so).TotalSeconds.ToString("F2") + " sec");
+                    //txtResults.AppendText(". Cost time : " + (DateTime.Now - so).TotalSeconds.ToString("F2") + " sec");
+                    txtResults.AppendText(". Cost time : " + (tm / 1000000000).ToString("F2") + " sec");
                     txtResults.AppendText(Environment.NewLine);
                 }
             }
